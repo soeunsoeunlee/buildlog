@@ -5,17 +5,17 @@
 이 문서는 Phase 0에서 확인한 개발 환경과 Phase 1 이후에 사용할 설정을 기록합니다.
 
 - 확인 날짜: 2026-10-26
-- 현재 단계: Phase 1 완료
-- 패키지 설치: FastAPI 백엔드 기본 패키지 설치 완료
-- 애플리케이션 코드 생성: FastAPI 기본 구조와 상태 확인 API 생성 완료
-- 데이터베이스 생성: 아직 하지 않음
-- Git 초기화: 하지 않음
+- 현재 단계: Phase 2 React 프론트엔드와 Phase 3 SQLite 데이터 계층 완료
+- 패키지 설치: FastAPI, React, 테스트 도구, SQLAlchemy와 Alembic 설치 완료
+- 애플리케이션 코드 생성: FastAPI 기본 구조, React 기본 화면과 SQLite 데이터 계층 생성 완료
+- 데이터베이스 생성: `database/buildlog.sqlite3` 생성 완료, Git 제외 대상
+- Git 저장소: 초기화되어 있으며 기존 커밋과 원격 저장소 설정을 유지함
 
 ### Phase 0 결과
 
 - 기능 범위를 `PRD.md`와 `spec.md` 기준으로 맞췄습니다.
 - `mvp.md`에 남아 있던 이전 기능 범위 충돌을 제거했습니다.
-- FastAPI, React, Supabase PostgreSQL과 SQLite 역할을 모든 문서에서 통일했습니다.
+- FastAPI, React와 SQLite의 현재 역할을 문서에서 통일했습니다. Supabase 연결은 관련 수업 이후로 보류했습니다.
 - 현재 Python, SQLite, Node.js와 npm 환경으로 다음 Phase를 시작할 수 있습니다.
 - 개발을 막는 항목은 없습니다.
 - 다음 작업은 Phase 1의 FastAPI 백엔드 뼈대 만들기입니다.
@@ -30,18 +30,38 @@
 - 데이터베이스, 회원, 기록과 프론트엔드 기능은 아직 만들지 않았습니다.
 - 다음 작업은 Phase 2의 React 프론트엔드 뼈대 만들기입니다.
 
+### Phase 2 결과
+
+- Vite로 React JavaScript 프로젝트를 만들고 패키지 버전을 `package-lock.json`에 기록했습니다.
+- 공통 API 호출 함수가 `VITE_API_BASE_URL`을 읽어 FastAPI에 요청합니다.
+- 첫 화면에서 `/api/health`의 연결 성공과 실패 상태를 쉬운 문장으로 보여줍니다.
+- 휴대폰 화면에서도 사용할 수 있는 공통 레이아웃, 카드, 입력칸과 버튼 스타일을 준비했습니다.
+- 프론트엔드 정적 검사, 화면 테스트 2개와 배포용 빌드가 통과했습니다.
+- 실제 React와 FastAPI 개발 서버를 함께 실행해 화면, 상태 API와 CORS 응답을 확인했습니다.
+
+### Phase 3 결과
+
+- 백엔드의 SQLite 데이터 계층을 구현했습니다.
+- SQLAlchemy 연결 엔진, 세션, 모델 공통 기반을 만들었습니다.
+- SQLite 외래 키 검사를 연결할 때 자동으로 활성화합니다.
+- Alembic 초기 변경 이력 `0001_initial`을 만들었습니다.
+- 실제 SQLite 파일에서 Alembic 적용, 되돌리기와 재적용을 확인했습니다.
+- 전체 백엔드 테스트 7개가 통과했습니다.
+- Supabase 패키지, 연결 코드와 비밀 설정은 추가하지 않았습니다.
+- 다음 작업은 Phase 4의 회원가입·로그인·닉네임 기능입니다.
+
 ## 2. 기술 구조
 
 - 프론트엔드: React와 Vite, JavaScript
 - 백엔드: Python과 FastAPI
 - 데이터 접근: SQLAlchemy
 - 데이터 구조 변경: Alembic
-- 실제 서비스 DB: Supabase Database(PostgreSQL)
-- 로컬·자동 테스트 DB: SQLite
+- 현재 개발·테스트 DB: SQLite
+- 향후 서비스 DB: Supabase 수업 이후 별도 연결
 - 백엔드 테스트: pytest
 - 프론트엔드 테스트: Vitest와 Testing Library
 
-Supabase는 데이터베이스 용도로만 사용합니다. Supabase Auth, Storage, Realtime은 첫 버전에 사용하지 않습니다. 회원가입, 로그인과 권한 처리는 FastAPI가 담당합니다.
+현재는 SQLite만 사용합니다. Supabase는 관련 수업을 진행한 뒤 별도 작업으로 연결하며, 회원가입과 권한 처리는 계속 FastAPI가 담당합니다.
 
 ## 3. 현재 컴퓨터에서 확인한 도구
 
@@ -57,10 +77,15 @@ Supabase는 데이터베이스 용도로만 사용합니다. Supabase Auth, Stor
 | Pydantic Settings | 2.16.1 | `.venv`에 설치됨 |
 | pytest | 9.1.1 | `.venv`에 설치됨 |
 | HTTPX2 | 2.16.0 | `.venv`에 설치됨 |
-| React 프로젝트 | 생성되지 않음 | Phase 2에서 생성 |
+| SQLAlchemy | 2.1.6 | `.venv`에 설치됨 |
+| Alembic | 1.20.1 | `.venv`에 설치됨 |
+| React | 19.3.1 | `frontend`에 설치됨 |
+| Vite | 8.3.5 | `frontend`에 설치됨 |
+| Vitest | 5.0.5 | `frontend`에 설치됨 |
+| Testing Library React | 16.3.3 | `frontend`에 설치됨 |
 | `.venv` | 있음 | Git 제외 대상 |
-| `.env` | 없음 | 필요한 Phase에서 생성 |
-| SQLite 파일 | 없음 | Phase 3 이후 생성 |
+| `frontend/.env` | 있음 | 로컬 API 주소 설정, Git 제외 대상 |
+| SQLite 파일 | `database/buildlog.sqlite3` | 생성 완료, Git 제외 대상 |
 
 PowerShell의 실행 정책 때문에 `npm`을 직접 실행하면 `npm.ps1` 오류가 날 수 있습니다. 실행 정책을 바꾸지 않고 `npm.cmd`와 `npx.cmd`를 사용합니다.
 
@@ -104,7 +129,7 @@ FastAPI의 CORS 허용 목록에는 React 개발 주소를 정확히 등록합�
 | 이름 | 용도 | 개발 기본값 또는 입력 시점 |
 | --- | --- | --- |
 | `APP_ENV` | 실행 환경 구분 | 개발에서는 `development` |
-| `DATABASE_URL` | 실제 실행 DB 연결 | 로컬은 SQLite, Supabase 연결 시 사용자가 `.env`에 입력 |
+| `DATABASE_URL` | 현재 실행 DB 연결 | 기본값은 내부 SQLite 파일 |
 | `TEST_DATABASE_URL` | 자동 테스트 DB 연결 | 임시 SQLite 사용 |
 | `AUTH_SECRET_KEY` | 로그인 토큰 서명 | Phase 4에서 안전한 임의 값 생성 |
 | `FRONTEND_ORIGIN` | 허용할 React 주소 | `http://localhost:5173` |
@@ -128,12 +153,9 @@ FastAPI의 CORS 허용 목록에는 React 개발 주소를 정확히 등록합�
 
 ### Supabase PostgreSQL
 
-- 실제 서비스 데이터 저장에 사용합니다.
-- FastAPI 백엔드만 연결합니다.
-- Supabase Dashboard의 `Connect` 메뉴에서 제공하는 연결 문자열을 사용합니다.
-- 연결 문자열은 로컬 또는 배포 환경의 `DATABASE_URL`에 저장합니다.
-- 연결 문자열을 채팅, 문서, 프론트엔드 코드와 Git에 남기지 않습니다.
-- SQLite에서 검증한 Alembic 변경 이력을 Supabase에도 적용해 호환성을 확인합니다.
+- 현재 개발 범위에서는 연결하지 않습니다.
+- Supabase 수업을 진행한 뒤 별도 작업으로 추가합니다.
+- 그때에도 FastAPI 백엔드만 연결하고 비밀 연결 문자열은 `.env`에서 관리합니다.
 
 ## 8. Phase별 사용자 준비 사항
 
@@ -141,16 +163,9 @@ FastAPI의 CORS 허용 목록에는 React 개발 주소를 정확히 등록합�
 
 사용자가 제공할 비밀값이나 외부 계정 설정은 없습니다.
 
-### Phase 3 또는 늦어도 Phase 13 전
+### Phase 3 이후
 
-실제 Supabase 연결을 확인하려면 다음 작업이 필요합니다.
-
-1. 사용자가 Supabase 프로젝트를 만듭니다.
-2. Supabase Dashboard의 `Connect` 메뉴에서 백엔드용 PostgreSQL 연결 문자열을 확인합니다.
-3. 연결 문자열을 프로젝트의 `.env`에 `DATABASE_URL` 값으로 직접 입력합니다.
-4. 연결 문자열은 대화나 문서에 붙여 넣지 않습니다.
-
-Supabase 연결값이 준비되지 않아도 SQLite를 사용하는 개발과 자동 테스트는 계속할 수 있습니다.
+현재 SQLite 사용에는 사용자가 준비할 값이 없습니다. Supabase 프로젝트와 연결 문자열은 관련 수업 이후 별도 요청이 있을 때만 준비합니다.
 
 ## 9. 설치와 실행 명령
 
@@ -174,17 +189,41 @@ Set-Location backend
 ..\.venv\Scripts\python.exe -m pytest
 ```
 
-Phase 1에서는 FastAPI, Uvicorn, Pydantic Settings, pytest와 HTTPX2만 설치했습니다. SQLAlchemy, Alembic, PostgreSQL 드라이버와 인증 패키지는 해당 기능을 시작하는 Phase에서 추가합니다.
+Phase 1에서는 FastAPI 기본 패키지를 설치했고 Phase 3에서 SQLAlchemy와 Alembic을 추가했습니다. PostgreSQL 드라이버와 인증 패키지는 아직 설치하지 않았습니다.
 
-### Phase 2 예정 작업
+### SQLite 변경 이력 적용
+
+```powershell
+Set-Location backend
+..\.venv\Scripts\python.exe -m alembic -c alembic.ini upgrade head
+```
+
+### SQLite 변경 이력 되돌리기
+
+```powershell
+Set-Location backend
+..\.venv\Scripts\python.exe -m alembic -c alembic.ini downgrade base
+```
+
+### 프론트엔드 설치와 실행
 
 ```powershell
 Set-Location frontend
-npm.cmd create vite@9.3.1 . -- --template react
 npm.cmd install
+Copy-Item .env.example .env
+npm.cmd run dev
 ```
 
-설치가 끝나면 생성된 잠금 파일로 프론트엔드 패키지 버전을 고정합니다.
+### 프론트엔드 확인
+
+```powershell
+Set-Location frontend
+npm.cmd run lint
+npm.cmd run test
+npm.cmd run build
+```
+
+설치된 프론트엔드 패키지 버전은 `package-lock.json`에 고정되어 있습니다.
 
 ## 10. 공식 참고 문서
 
