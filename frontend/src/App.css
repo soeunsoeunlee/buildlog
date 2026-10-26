@@ -1,0 +1,174 @@
+.app-shell {
+  min-height: 100vh;
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.brand {
+  color: var(--color-primary);
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-decoration: none;
+}
+
+.phase-label {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.main-content {
+  display: grid;
+  gap: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 44px 24px 80px;
+}
+
+.intro-card,
+.status-card,
+.form-preview {
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  background: var(--color-surface);
+  box-shadow: 0 12px 36px rgb(42 34 73 / 7%);
+}
+
+.intro-card {
+  padding: 48px;
+  background: linear-gradient(135deg, #fff 0%, #f4f1ff 100%);
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  color: var(--color-primary);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+h1 {
+  max-width: 700px;
+  margin: 0;
+  color: var(--color-heading);
+  font-size: clamp(2rem, 6vw, 3.6rem);
+  line-height: 1.1;
+  letter-spacing: -0.05em;
+}
+
+.intro-text {
+  max-width: 680px;
+  margin: 24px 0 0;
+  color: var(--color-text-muted);
+  line-height: 1.75;
+}
+
+.status-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 28px;
+}
+
+.status-card h2,
+.form-preview h2 {
+  margin: 0 0 8px;
+  color: var(--color-heading);
+  font-size: 1.1rem;
+}
+
+.status-card p,
+.form-preview p {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.status-dot {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: #a7a3b4;
+  box-shadow: 0 0 0 6px rgb(167 163 180 / 15%);
+}
+
+.status-dot--success {
+  background: #168a57;
+  box-shadow: 0 0 0 6px rgb(22 138 87 / 15%);
+}
+
+.status-dot--error {
+  background: #c83c4a;
+  box-shadow: 0 0 0 6px rgb(200 60 74 / 15%);
+}
+
+.form-preview {
+  display: grid;
+  gap: 12px;
+  padding: 28px;
+}
+
+.form-preview label {
+  margin-top: 8px;
+  color: var(--color-heading);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.form-preview input,
+.form-preview button {
+  min-height: 46px;
+  border-radius: 10px;
+  font: inherit;
+}
+
+.form-preview input {
+  border: 1px solid var(--color-border);
+  padding: 0 14px;
+  background: #fbfaff;
+}
+
+.form-preview button {
+  width: fit-content;
+  border: 0;
+  padding: 0 20px;
+  color: #fff;
+  background: var(--color-primary);
+  font-weight: 700;
+}
+
+.form-preview :disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+@media (max-width: 600px) {
+  .site-header {
+    padding: 18px;
+  }
+
+  .main-content {
+    padding: 24px 16px 48px;
+  }
+
+  .intro-card {
+    padding: 30px 24px;
+  }
+
+  .status-card,
+  .form-preview {
+    padding: 22px;
+  }
+
+  .form-preview button {
+    width: 100%;
+  }
+}
