@@ -1,0 +1,18 @@
+# Secret environment files
+.env
+.env.*
+!.env.example
+
+# Installed dependencies and virtual environments
+.venv/
+node_modules/
+
+# Generated output and caches
+dist/
+__pycache__/
+.pytest_cache/
+.vite/
+*.sqlite3
+
+# Logs
+*.log
