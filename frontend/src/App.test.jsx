@@ -1,44 +1,57 @@
-import { cleanup, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App.jsx'
+
+beforeEach(() => localStorage.clear())
 
 afterEach(() => {
   cleanup()
   vi.unstubAllGlobals()
 })
 
-describe('서버 연결 상태 화면', () => {
-  it('FastAPI 상태 응답을 받으면 정상 연결을 안내한다', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({ status: 'ok', service: 'BuildLog API' }),
-      }),
-    )
-
+describe('회원 화면', () => {
+  it('로그인과 회원가입 입력 화면을 전환한다', () => {
     render(<App />)
 
-    expect(
-      await screen.findByText('BuildLog API 백엔드에 정상적으로 연결되었습니다.'),
-    ).toBeInTheDocument()
-    expect(fetch).toHaveBeenCalledWith(
-      expect.stringMatching(/\/api\/health$/),
-      expect.objectContaining({
-        headers: expect.objectContaining({ Accept: 'application/json' }),
-      }),
-    )
+    expect(screen.getAllByRole('button', { name: '로그인' })).toHaveLength(2)
+    fireEvent.click(screen.getByRole('button', { name: '회원가입' }))
+    expect(screen.getByLabelText('닉네임')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '가입하고 시작하기' })).toBeInTheDocument()
   })
 
-  it('FastAPI에 연결하지 못하면 확인 방법을 안내한다', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network error')))
-
+  it('로그인에 성공하면 내 기록 홈을 보여준다', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        token: 'test-token',
+        user: { id: 1, email: 'user@example.com', nickname: '테스트사용자', is_admin: false },
+      }),
+    }))
     render(<App />)
 
-    expect(
-      await screen.findByText(
-        '백엔드에 연결할 수 없습니다. FastAPI 서버가 실행 중인지 확인해 주세요.',
-      ),
-    ).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('이메일'), { target: { value: 'user@example.com' } })
+    fireEvent.change(screen.getByLabelText('비밀번호'), { target: { value: 'password123' } })
+    fireEvent.submit(screen.getByLabelText('비밀번호').closest('form'))
+
+    expect(await screen.findByText('테스트사용자님의 BuildLog')).toBeInTheDocument()
+    expect(localStorage.getItem('buildlog_token')).toBe('test-token')
+  })
+
+  it('로그인 실패 시 입력값과 안내를 유지한다', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: false,
+      status: 401,
+      json: async () => ({ error: { message: '이메일 또는 비밀번호가 맞지 않습니다.' } }),
+    }))
+    render(<App />)
+
+    const email = screen.getByLabelText('이메일')
+    fireEvent.change(email, { target: { value: 'user@example.com' } })
+    fireEvent.change(screen.getByLabelText('비밀번호'), { target: { value: 'wrong' } })
+    fireEvent.submit(screen.getByLabelText('비밀번호').closest('form'))
+
+    expect(await screen.findByText('이메일 또는 비밀번호가 맞지 않습니다.')).toBeInTheDocument()
+    expect(email).toHaveValue('user@example.com')
   })
 })

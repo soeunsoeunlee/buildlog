@@ -25,7 +25,14 @@ def register_exception_handlers(app: FastAPI) -> None:
             content=error_body(
                 code="validation_error",
                 message="입력값을 확인해 주세요.",
-                details=exc.errors(),
+                details=[
+                    {
+                        "location": error.get("loc", ()),
+                        "message": error.get("msg", "입력값을 확인해 주세요."),
+                        "type": error.get("type", "validation_error"),
+                    }
+                    for error in exc.errors()
+                ],
             ),
         )
 

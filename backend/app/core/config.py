@@ -18,8 +18,6 @@ class Settings(BaseSettings):
 
     database_url: str = DEFAULT_DATABASE_URL
     test_database_url: str = "sqlite+pysqlite:///:memory:"
-    auth_secret_key: str | None = None
-
     @field_validator("database_url", mode="before")
     @classmethod
     def resolve_project_relative_sqlite_url(cls, value: object) -> object:

@@ -47,9 +47,16 @@ def test_alembic_initial_migration_upgrades_and_downgrades(tmp_path: Path) -> No
     command.upgrade(config, "head")
 
     engine = create_engine(database_url)
-    assert "alembic_version" in inspect(engine).get_table_names()
+    assert set(inspect(engine).get_table_names()) >= {
+        "alembic_version",
+        "users",
+        "auth_sessions",
+        "study_records",
+        "todo_records",
+        "error_records",
+    }
     with engine.connect() as connection:
-        assert connection.execute(text("SELECT version_num FROM alembic_version")).scalar_one() == "0001_initial"
+        assert connection.execute(text("SELECT version_num FROM alembic_version")).scalar_one() == "0003_records"
     engine.dispose()
 
     command.downgrade(config, "base")
